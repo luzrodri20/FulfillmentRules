@@ -1,0 +1,15 @@
+package com.delta.ticketing.rhdm.fulfillmentrules;
+
+import java.lang.Number;
+
+rule "Initialization - Insert Request Aggregates into WM for Input Validation"
+	dialect "mvel"
+	ruleflow-group "Initialization Rule Flow"
+	no-loop true
+	when
+		transaction : FulfillmentTxn( dbDocsListEmpty == false )
+		(document : Document( requestAggregateListEmpty == false ) from transaction.dbDocs)
+		(aggregate : Aggregate( ) from document.requestAggregates)
+	then
+		insert(aggregate)
+end

@@ -1,0 +1,15 @@
+package com.delta.ticketing.rhdm.fulfillmentrules;
+
+import java.lang.Number;
+
+rule "Initialization - insert DocAPI Coupons into WM for Input Validation"
+	dialect "mvel"
+	ruleflow-group "Initialization Rule Flow"
+	no-loop true
+	when
+		transaction : FulfillmentTxn( dbDocsListEmpty == false )
+		(document : Document( ) from transaction.dbDocs)
+		(coupon : Coupon( ) from document.docApiCoupons)
+	then
+		insert(coupon)
+end

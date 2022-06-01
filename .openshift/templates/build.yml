@@ -1,0 +1,77 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: fulfillment-rules
+objects:
+- kind: BuildConfig
+  apiVersion: build.openshift.io/v1
+  metadata:
+    labels:
+      application: ${APPLICATION_NAME}
+    name: ${APPLICATION_NAME}-${PIPELINE_NAME_SUFFIX}
+    namespace: ${NAMESPACE}
+  spec:
+    source: #Build config source location
+      type: Git
+      git:
+        uri: ${SOURCE_REPOSITORY_URL} # Git Lab repo location Ex: git@git.delta.com:openshift/application-examples.git
+        ref: ${SOURCE_REPOSITORY_REF} # Git branch/tag reference
+      sourceSecret:
+        name: git-secret # Private key that matches public key stored in gitlab
+      contextDir: ${CONTEXT_DIR} # he build process will change to this directory
+    triggers: # Build Triggers
+    - type: ConfigChange # Kick-off build whenever the config changes
+    strategy:
+      type: JenkinsPipeline # Uses a JenkinsFile to do a pipeline build
+      jenkinsPipelineStrategy:
+        jenkinsfilePath: ${PIPELINE_SCRIPT} # Path to JenkinsFile    
+      env:
+      - name: NEXUS_USERNAME
+        valueFrom:
+          secretKeyRef:
+            name: nexus-upload-token
+            key: username
+      - name: NEXUS_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: nexus-upload-token
+            key: password
+parameters:
+- description: The name for the application.
+  name: APPLICATION_NAME
+  required: true
+- description: The namespace to deploy into
+  name: NAMESPACE
+  required: true
+- description: Git source URI for application
+  name: SOURCE_REPOSITORY_URL
+  required: true
+- description: Git branch/tag reference
+  name: SOURCE_REPOSITORY_REF
+- description: Path within Git project to build; empty for root project directory.
+  name: CONTEXT_DIR
+  value:
+- description: Path within Git project pointing to the pipeline run script
+  name: PIPELINE_SCRIPT 
+  value: Jenkinsfile
+  required: true
+- description: suffix that will be added to the pieline name like to-releases etc
+  name: PIPELINE_NAME_SUFFIX
+  value: to-snapshots
+  required: true
+- description: Namespace in which the ImageStreams for Red Hat Middleware images are
+    installed. These ImageStreams are normally installed in the openshift namespace.
+    You should only need to modify this if you've installed the ImageStreams in a
+    different namespace/project.
+  name: IMAGE_STREAM_NAMESPACE
+  required: true
+  value: openshift
+- description: Image stream tag for the image you'd like to use to build the application
+  name: IMAGE_STREAM_TAG_NAME
+  required: true
+  value: redhat-openjdk18-openshift:1.7
+- description: Image tag
+  name: TAG
+  required: true
+  value: latest

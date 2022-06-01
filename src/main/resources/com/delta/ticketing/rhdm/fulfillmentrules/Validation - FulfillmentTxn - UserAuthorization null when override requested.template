@@ -1,0 +1,127 @@
+<rule>
+  <name>Validation - FulfillmentTxn - UserAuthorization null when override requested</name>
+  <modelVersion>1.0</modelVersion>
+  <attributes>
+    <attribute>
+      <attributeName>ruleflow-group</attributeName>
+      <value>Validation Rule Flow</value>
+    </attribute>
+    <attribute>
+      <attributeName>lock-on-active</attributeName>
+      <value>true</value>
+    </attribute>
+    <attribute>
+      <attributeName>enabled</attributeName>
+      <value>false</value>
+    </attribute>
+  </attributes>
+  <metadataList/>
+  <lhs>
+    <fact>
+      <constraintList>
+        <constraints>
+          <fieldConstraint>
+            <operator>!= null</operator>
+            <constraintValueType>0</constraintValueType>
+            <expression>
+              <parts/>
+              <index>2147483647</index>
+            </expression>
+            <parameters/>
+            <factType>FulfillmentTxn</factType>
+            <fieldName>intent</fieldName>
+            <fieldType>Comparable</fieldType>
+          </fieldConstraint>
+          <fieldConstraint>
+            <value>$intentIs</value>
+            <operator>matches</operator>
+            <constraintValueType>7</constraintValueType>
+            <expression>
+              <parts/>
+              <index>2147483647</index>
+            </expression>
+            <parameters/>
+            <factType>FulfillmentTxn</factType>
+            <fieldName>intent</fieldName>
+            <fieldType>String</fieldType>
+          </fieldConstraint>
+          <fieldConstraint>
+            <operator>== null</operator>
+            <constraintValueType>0</constraintValueType>
+            <expression>
+              <parts/>
+              <index>2147483647</index>
+            </expression>
+            <parameters/>
+            <factType>FulfillmentTxn</factType>
+            <fieldName>userAuthorization</fieldName>
+            <fieldType>String</fieldType>
+          </fieldConstraint>
+          <fieldConstraint>
+            <value>true</value>
+            <operator>==</operator>
+            <constraintValueType>1</constraintValueType>
+            <expression>
+              <parts/>
+              <index>2147483647</index>
+            </expression>
+            <parameters/>
+            <factType>FulfillmentTxn</factType>
+            <fieldName>overrideRequested</fieldName>
+            <fieldType>Boolean</fieldType>
+          </fieldConstraint>
+        </constraints>
+      </constraintList>
+      <factType>FulfillmentTxn</factType>
+      <boundName>transaction</boundName>
+      <isNegated>false</isNegated>
+      <window>
+        <parameters/>
+      </window>
+    </fact>
+  </lhs>
+  <rhs>
+    <dslSentence>
+      <drl>modify(transaction) {setTxnResponse(transaction.addRuleExecutionResult(false))};</drl>
+      <definition>note rule execution is not successful</definition>
+      <values/>
+    </dslSentence>
+    <freeForm>
+      <text>transaction.addError(&quot;@{errorCode}&quot;, &quot;@{errorMessage}&quot;) 
+transaction.addAdvisory(&quot;A001&quot;, drools.getRule().getName() + &quot; fired&quot;)</text>
+    </freeForm>
+  </rhs>
+  <imports>
+    <imports/>
+  </imports>
+  <packageName>com.delta.ticketing.rhdm.fulfillmentrules</packageName>
+  <isNegated>false</isNegated>
+  <table>
+    <entry>
+      <string>__ID_KOL_NAME__</string>
+      <list>
+        <string>1</string>
+      </list>
+    </entry>
+    <entry>
+      <string>$intentIs</string>
+      <list>
+        <string>REFUND</string>
+      </list>
+    </entry>
+    <entry>
+      <string>errorMessage</string>
+      <list>
+        <string>userAuthorization Not Present on FulfillmentTxn when override is requested</string>
+      </list>
+    </entry>
+    <entry>
+      <string>errorCode</string>
+      <list>
+        <string>E0003</string>
+      </list>
+    </entry>
+  </table>
+  <idCol>1</idCol>
+  <rowsCount>1</rowsCount>
+</rule>

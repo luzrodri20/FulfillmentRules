@@ -1,0 +1,87 @@
+<rule>
+  <name>Finalization - Prepare Document For Response</name>
+  <modelVersion>1.0</modelVersion>
+  <attributes>
+    <attribute>
+      <attributeName>ruleflow-group</attributeName>
+      <value>Finalization Flow Group</value>
+    </attribute>
+    <attribute>
+      <attributeName>no-loop</attributeName>
+      <value>true</value>
+    </attribute>
+    <attribute>
+      <attributeName>salience</attributeName>
+      <value>200</value>
+    </attribute>
+  </attributes>
+  <metadataList/>
+  <lhs>
+    <fact>
+      <constraintList>
+        <constraints>
+          <fieldConstraint>
+            <value>false</value>
+            <operator>==</operator>
+            <constraintValueType>1</constraintValueType>
+            <expression>
+              <parts/>
+              <index>2147483647</index>
+            </expression>
+            <parameters/>
+            <factType>FulfillmentTxn</factType>
+            <fieldName>dbDocsListEmpty</fieldName>
+            <fieldType>Boolean</fieldType>
+          </fieldConstraint>
+        </constraints>
+      </constraintList>
+      <factType>FulfillmentTxn</factType>
+      <boundName>transaction</boundName>
+      <isNegated>false</isNegated>
+      <window>
+        <parameters/>
+      </window>
+    </fact>
+    <fact>
+      <factType>Document</factType>
+      <boundName>document</boundName>
+      <isNegated>false</isNegated>
+      <window>
+        <parameters/>
+      </window>
+    </fact>
+  </lhs>
+  <rhs>
+    <freeForm>
+      <text>
+document.setRequestAggregates(null);
+document.setFopInfos(null);
+document.setDbAggregates(null);
+document.setDocApiCoupons(null);
+document.setDbCoupons(null);
+</text>
+    </freeForm>
+  </rhs>
+  <imports>
+    <imports>
+      <org.kie.soup.project.datamodel.imports.Import>
+        <type>java.lang.Number</type>
+      </org.kie.soup.project.datamodel.imports.Import>
+      <org.kie.soup.project.datamodel.imports.Import>
+        <type>java.util.List</type>
+      </org.kie.soup.project.datamodel.imports.Import>
+    </imports>
+  </imports>
+  <packageName>com.delta.ticketing.rhdm.fulfillmentrules</packageName>
+  <isNegated>false</isNegated>
+  <table>
+    <entry>
+      <string>__ID_KOL_NAME__</string>
+      <list>
+        <string>1</string>
+      </list>
+    </entry>
+  </table>
+  <idCol>1</idCol>
+  <rowsCount>1</rowsCount>
+</rule>

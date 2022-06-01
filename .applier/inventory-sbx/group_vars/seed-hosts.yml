@@ -1,0 +1,35 @@
+filter_tags:
+  - sbx #sandbox
+  - pipeline #enterprise pipeline
+
+openshift_cluster_content:
+- object: git-secret
+  content:
+  - name: "create git secret"
+    template: "{{ inventory_dir }}/../../.openshift/templates/git-secret.yml"
+    params: "{{ inventory_dir }}/../../.openshift/params/secret"
+    tags:
+      - sbx
+      - pipeline
+- object: nexus-upload-token
+  content:
+  - name: "create nexus secret"
+    template: "{{ inventory_dir }}/../../.openshift/templates/nexus-upload-token.yml"
+    params: "{{ inventory_dir }}/../../.openshift/params/secret"
+    tags:
+      - sbx
+      - pipeline
+- object: builds
+  content:
+  - name: "deploy build to sandbox"
+    template: "{{ inventory_dir }}/../../.openshift/templates/build.yml"
+    params: "{{ inventory_dir }}/../../.openshift/params/build-sbx"
+    tags:
+      - sbx 
+- object: builds
+  content:
+  - name: "deploy build to dvl"
+    template: "{{ inventory_dir }}/../../.openshift/templates/build.yml"
+    params: "{{ inventory_dir }}/../../.openshift/params/build-dvl"
+    tags:
+      - pipeline

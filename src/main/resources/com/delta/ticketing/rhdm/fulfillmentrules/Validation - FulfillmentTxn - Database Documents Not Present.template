@@ -1,0 +1,65 @@
+<rule>
+  <name>Validation - FulfillmentTxn - Database Documents Not Present</name>
+  <modelVersion>1.0</modelVersion>
+  <attributes>
+    <attribute>
+      <attributeName>ruleflow-group</attributeName>
+      <value>Validation Rule Flow</value>
+    </attribute>
+    <attribute>
+      <attributeName>lock-on-active</attributeName>
+      <value>true</value>
+    </attribute>
+  </attributes>
+  <metadataList/>
+  <lhs>
+    <dslSentence>
+      <drl>transaction:FulfillmentTxn()</drl>
+      <definition>When there exists a FulfillmentTxn where</definition>
+      <values/>
+    </dslSentence>
+    <dslSentence>
+      <drl>isDbDocsListEmpty()</drl>
+      <definition>- that transaction&apos;s  database document list is empty</definition>
+      <values/>
+    </dslSentence>
+  </lhs>
+  <rhs>
+    <dslSentence>
+      <drl>modify(transaction) {setTxnResponse(transaction.addRuleExecutionResult(false))};</drl>
+      <definition>note rule execution is not successful</definition>
+      <values/>
+    </dslSentence>
+    <freeForm>
+      <text>transaction.addError(&quot;@{errorCode}&quot;, &quot;@{errorMessage}&quot;) 
+transaction.addAdvisory(&quot;A001&quot;, drools.getRule().getName() + &quot; fired&quot;)</text>
+    </freeForm>
+  </rhs>
+  <imports>
+    <imports/>
+  </imports>
+  <packageName>com.delta.ticketing.rhdm.fulfillmentrules</packageName>
+  <isNegated>false</isNegated>
+  <table>
+    <entry>
+      <string>__ID_KOL_NAME__</string>
+      <list>
+        <string>1</string>
+      </list>
+    </entry>
+    <entry>
+      <string>errorMessage</string>
+      <list>
+        <string>Validation - FulfillmentTxn - Database Documents Not Present</string>
+      </list>
+    </entry>
+    <entry>
+      <string>errorCode</string>
+      <list>
+        <string>E0003</string>
+      </list>
+    </entry>
+  </table>
+  <idCol>1</idCol>
+  <rowsCount>1</rowsCount>
+</rule>

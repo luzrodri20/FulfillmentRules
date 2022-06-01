@@ -1,0 +1,19 @@
+package com.delta.ticketing.rhdm.fulfillmentrules;
+
+import java.lang.Number;
+
+rule "Initialization - Initialize Fulfillment Transaction Response"
+	dialect "mvel"
+	ruleflow-group "Initialization Rule Flow"
+	lock-on-active true
+	no-loop true
+	when
+		transaction1 : FulfillmentTxn( )
+	then
+	    insert(transaction1);
+		RuleExecutionResult result = new RuleExecutionResult(true);
+		TxnResponse response = new TxnResponse(result);
+		modify( transaction1 ) {
+				setTxnResponse( response )
+		}			
+end

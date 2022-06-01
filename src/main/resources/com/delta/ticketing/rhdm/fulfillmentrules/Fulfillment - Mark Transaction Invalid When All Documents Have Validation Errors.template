@@ -1,0 +1,144 @@
+<rule>
+  <name>Fulfillment - Mark Transaction Invalid When All Documents Have Validation Errors</name>
+  <modelVersion>1.0</modelVersion>
+  <attributes>
+    <attribute>
+      <attributeName>ruleflow-group</attributeName>
+      <value>Fulfillment Rule Flow Group</value>
+    </attribute>
+    <attribute>
+      <attributeName>salience</attributeName>
+      <value>2000</value>
+    </attribute>
+    <attribute>
+      <attributeName>lock-on-active</attributeName>
+      <value>false</value>
+    </attribute>
+    <attribute>
+      <attributeName>no-loop</attributeName>
+      <value>true</value>
+    </attribute>
+  </attributes>
+  <metadataList/>
+  <lhs>
+    <fact>
+      <constraintList>
+        <constraints>
+          <fieldConstraint>
+            <operator>!= null</operator>
+            <constraintValueType>0</constraintValueType>
+            <expression>
+              <parts/>
+              <index>2147483647</index>
+            </expression>
+            <parameters/>
+            <factType>FulfillmentTxn</factType>
+            <fieldName>dbDocs</fieldName>
+            <fieldType>Collection</fieldType>
+          </fieldConstraint>
+        </constraints>
+      </constraintList>
+      <factType>FulfillmentTxn</factType>
+      <boundName>transaction</boundName>
+      <isNegated>false</isNegated>
+      <window>
+        <parameters/>
+      </window>
+    </fact>
+    <fromCollectCompositePattern>
+      <factPattern>
+        <factType>List</factType>
+        <boundName>validDocuments</boundName>
+        <isNegated>false</isNegated>
+        <window>
+          <parameters/>
+        </window>
+      </factPattern>
+      <expression>
+        <parts/>
+        <index>2147483647</index>
+      </expression>
+      <rightPattern class="fromCompositePattern">
+        <factPattern>
+          <constraintList>
+            <constraints>
+              <fieldConstraint>
+                <value>document.isValidated()</value>
+                <constraintValueType>5</constraintValueType>
+                <expression>
+                  <parts/>
+                  <index>2147483647</index>
+                </expression>
+                <parameters/>
+                <fieldType></fieldType>
+              </fieldConstraint>
+            </constraints>
+          </constraintList>
+          <factType>Document</factType>
+          <boundName>document</boundName>
+          <isNegated>false</isNegated>
+          <window>
+            <parameters/>
+          </window>
+        </factPattern>
+        <expression>
+          <parts>
+            <variable>
+              <next class="collection">
+                <prev class="variable" reference="../.."/>
+                <name>dbDocs</name>
+                <classType>List</classType>
+                <genericType>Collection</genericType>
+                <parametricType>Document</parametricType>
+              </next>
+              <name>transaction</name>
+              <classType>FulfillmentTxn</classType>
+              <genericType>FulfillmentTxn</genericType>
+              <factType>FulfillmentTxn</factType>
+            </variable>
+            <collection reference="../variable/next"/>
+          </parts>
+          <index>2147483647</index>
+        </expression>
+      </rightPattern>
+    </fromCollectCompositePattern>
+    <freeForm>
+      <text>eval (validDocuments.size() == 0)</text>
+    </freeForm>
+  </lhs>
+  <rhs>
+    <dslSentence>
+      <drl>modify(transaction) {setTxnResponse(transaction.addRuleExecutionResult(false))}</drl>
+      <definition>note rule execution is not successful</definition>
+      <values/>
+    </dslSentence>
+    <freeForm>
+      <text>System.out.println(&quot;All Documents have ValidationErrors&quot;); 
+System.out.println(&quot;No Of Valid Documents are &quot; + validDocuments.size())
+transaction.addAdvisory(&quot;A001&quot;, drools.getRule().getName() + &quot; fired&quot;)
+transaction.getTxnResponse().setEligibility(&quot;N&quot;);</text>
+    </freeForm>
+  </rhs>
+  <imports>
+    <imports>
+      <org.kie.soup.project.datamodel.imports.Import>
+        <type>java.lang.Number</type>
+      </org.kie.soup.project.datamodel.imports.Import>
+      <org.kie.soup.project.datamodel.imports.Import>
+        <type>java.util.List</type>
+      </org.kie.soup.project.datamodel.imports.Import>
+    </imports>
+  </imports>
+  <packageName>com.delta.ticketing.rhdm.fulfillmentrules</packageName>
+  <isNegated>false</isNegated>
+  <table>
+    <entry>
+      <string>__ID_KOL_NAME__</string>
+      <list>
+        <string>1</string>
+      </list>
+    </entry>
+  </table>
+  <idCol>1</idCol>
+  <rowsCount>1</rowsCount>
+</rule>

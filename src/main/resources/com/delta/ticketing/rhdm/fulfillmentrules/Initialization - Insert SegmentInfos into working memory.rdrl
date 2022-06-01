@@ -1,0 +1,14 @@
+package com.delta.ticketing.rhdm.fulfillmentrules;
+
+import java.lang.Number;
+
+rule "Initialization - Insert SegmentInfos into working memory"
+	dialect "mvel"
+	ruleflow-group "Initialization Rule Flow"
+	no-loop true
+	when
+		pnr : Pnr( segInfos != null )
+		(segment : SegmentInfo( ) from pnr.segInfos)
+	then
+		insert(segment)
+end

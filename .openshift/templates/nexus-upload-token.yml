@@ -1,0 +1,27 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+labels:
+  template: nexus-upload-token
+metadata:
+  annotations:
+    description: nexus secret for credentials
+    tags: secret
+    version: 1.0.0
+  name: nexus-upload-token
+  namespace: ${NAMESPACE}
+objects:
+- apiVersion: v1
+  data:
+    username: SIvQPqmC 
+    password: pIG/mYzSslxJiCe6uNq8/nci9ihw2Ge4QXwJf2PLD784 
+  kind: Secret
+  metadata:
+    labels:
+      credential.sync.jenkins.openshift.io: 'true'
+    name: nexus-upload-token
+    namespace: ${NAMESPACE}
+  type: kubernetes.io/basic-auth
+parameters:
+- description: The namespace to create secret
+  name: NAMESPACE
+  required: true

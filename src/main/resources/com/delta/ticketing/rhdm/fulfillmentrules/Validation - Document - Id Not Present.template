@@ -1,0 +1,110 @@
+<rule>
+  <name>Validation - Document - Id Not Present</name>
+  <modelVersion>1.0</modelVersion>
+  <attributes>
+    <attribute>
+      <attributeName>ruleflow-group</attributeName>
+      <value>Validation Rule Flow</value>
+    </attribute>
+    <attribute>
+      <attributeName>lock-on-active</attributeName>
+      <value>true</value>
+    </attribute>
+  </attributes>
+  <metadataList/>
+  <lhs>
+    <fact>
+      <constraintList>
+        <constraints/>
+      </constraintList>
+      <factType>FulfillmentTxn</factType>
+      <boundName>transaction</boundName>
+      <isNegated>false</isNegated>
+      <window>
+        <parameters/>
+      </window>
+    </fact>
+    <fact>
+      <constraintList>
+        <constraints>
+          <fieldConstraint>
+            <operator>== null</operator>
+            <constraintValueType>0</constraintValueType>
+            <expression>
+              <parts/>
+              <index>2147483647</index>
+            </expression>
+            <parameters/>
+            <factType>Document</factType>
+            <fieldName>id</fieldName>
+            <fieldType>String</fieldType>
+          </fieldConstraint>
+          <fieldConstraint>
+            <constraintValueType>0</constraintValueType>
+            <expression>
+              <parts/>
+              <index>2147483647</index>
+            </expression>
+            <parameters/>
+            <fieldBinding>eligibilityInfo</fieldBinding>
+            <factType>Document</factType>
+            <fieldName>eligibilityInfo</fieldName>
+            <fieldType>EligibilityInfo</fieldType>
+          </fieldConstraint>
+        </constraints>
+      </constraintList>
+      <factType>Document</factType>
+      <boundName>document</boundName>
+      <isNegated>false</isNegated>
+      <window>
+        <parameters/>
+      </window>
+    </fact>
+  </lhs>
+  <rhs>
+    <dslSentence>
+      <drl>modify(document) {setRuleResult(document.addRuleExecutionResult(false))};</drl>
+      <definition>note document validation is not successful</definition>
+      <values/>
+    </dslSentence>
+    <freeForm>
+      <text>document.addError(&quot;@{errorCode}&quot;, &quot;@{errorMessage}&quot;) 
+document.addAdvisory(&quot;A001&quot;, drools.getRule().getName() + &quot; fired&quot;)
+modify (eligibilityInfo) { setRefundable(@{refundEligible}) }
+transaction.getTxnResponse().getRuleResult().setSuccess(false)</text>
+    </freeForm>
+  </rhs>
+  <imports>
+    <imports/>
+  </imports>
+  <packageName>com.delta.ticketing.rhdm.fulfillmentrules</packageName>
+  <isNegated>false</isNegated>
+  <table>
+    <entry>
+      <string>__ID_KOL_NAME__</string>
+      <list>
+        <string>1</string>
+      </list>
+    </entry>
+    <entry>
+      <string>refundEligible</string>
+      <list>
+        <string>false</string>
+      </list>
+    </entry>
+    <entry>
+      <string>errorMessage</string>
+      <list>
+        <string>Validation - Document - Id Not Present on one of the Database Documents in FulfillmentTxn</string>
+      </list>
+    </entry>
+    <entry>
+      <string>errorCode</string>
+      <list>
+        <string>E0004</string>
+      </list>
+    </entry>
+  </table>
+  <idCol>1</idCol>
+  <rowsCount>1</rowsCount>
+</rule>

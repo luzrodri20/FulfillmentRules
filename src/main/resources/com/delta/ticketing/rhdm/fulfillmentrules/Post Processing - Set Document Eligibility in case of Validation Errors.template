@@ -1,0 +1,158 @@
+<rule>
+  <name>Post Processing - Set Document Eligibility in case of Validation Errors</name>
+  <modelVersion>1.0</modelVersion>
+  <attributes>
+    <attribute>
+      <attributeName>salience</attributeName>
+      <value>1000</value>
+    </attribute>
+    <attribute>
+      <attributeName>ruleflow-group</attributeName>
+      <value>Post Processing Rule Flow Group</value>
+    </attribute>
+    <attribute>
+      <attributeName>agenda-group</attributeName>
+      <value>post processing</value>
+    </attribute>
+    <attribute>
+      <attributeName>lock-on-active</attributeName>
+      <value>true</value>
+    </attribute>
+  </attributes>
+  <metadataList/>
+  <lhs>
+    <fact>
+      <constraintList>
+        <constraints>
+          <fieldConstraint>
+            <operator>!= null</operator>
+            <constraintValueType>0</constraintValueType>
+            <expression>
+              <parts/>
+              <index>2147483647</index>
+            </expression>
+            <parameters/>
+            <factType>FulfillmentTxn</factType>
+            <fieldName>dbDocs</fieldName>
+            <fieldType>Collection</fieldType>
+          </fieldConstraint>
+        </constraints>
+      </constraintList>
+      <factType>FulfillmentTxn</factType>
+      <boundName>transaction</boundName>
+      <isNegated>false</isNegated>
+      <window>
+        <parameters/>
+      </window>
+    </fact>
+    <fact>
+      <constraintList>
+        <constraints>
+          <fieldConstraint>
+            <operator>!= null</operator>
+            <constraintValueType>0</constraintValueType>
+            <expression>
+              <parts/>
+              <index>2147483647</index>
+            </expression>
+            <parameters/>
+            <fieldBinding>eligibilityInfo</fieldBinding>
+            <factType>Document</factType>
+            <fieldName>eligibilityInfo</fieldName>
+            <fieldType>EligibilityInfo</fieldType>
+          </fieldConstraint>
+          <fieldConstraint>
+            <operator>!= null</operator>
+            <constraintValueType>0</constraintValueType>
+            <expression>
+              <parts/>
+              <index>2147483647</index>
+            </expression>
+            <parameters/>
+            <factType>Document</factType>
+            <fieldName>ruleResult</fieldName>
+            <fieldType>RuleExecutionResult</fieldType>
+          </fieldConstraint>
+          <org.drools.workbench.models.datamodel.rule.SingleFieldConstraintEBLeftSide>
+            <value>false</value>
+            <operator>==</operator>
+            <constraintValueType>1</constraintValueType>
+            <expression>
+              <parts/>
+              <index>2147483647</index>
+            </expression>
+            <parameters/>
+            <factType>Document</factType>
+            <fieldName>booleanValue</fieldName>
+            <fieldType>boolean</fieldType>
+            <expLeftSide>
+              <parts>
+                <org.drools.workbench.models.datamodel.rule.ExpressionUnboundFact>
+                  <next class="field">
+                    <prev class="org.drools.workbench.models.datamodel.rule.ExpressionUnboundFact" reference="../.."/>
+                    <next class="field">
+                      <prev class="field" reference="../.."/>
+                      <next class="method">
+                        <prev class="field" reference="../.."/>
+                        <name>booleanValue</name>
+                        <classType>boolean</classType>
+                        <genericType>Boolean</genericType>
+                        <params/>
+                      </next>
+                      <name>success</name>
+                      <classType>java.lang.Boolean</classType>
+                      <genericType>Boolean</genericType>
+                    </next>
+                    <name>ruleResult</name>
+                    <classType>RuleExecutionResult</classType>
+                    <genericType>RuleExecutionResult</genericType>
+                  </next>
+                  <name>Document</name>
+                  <classType>Document</classType>
+                  <genericType>Document</genericType>
+                  <factType>Document</factType>
+                </org.drools.workbench.models.datamodel.rule.ExpressionUnboundFact>
+                <field reference="../org.drools.workbench.models.datamodel.rule.ExpressionUnboundFact/next"/>
+                <field reference="../org.drools.workbench.models.datamodel.rule.ExpressionUnboundFact/next/next"/>
+                <method reference="../org.drools.workbench.models.datamodel.rule.ExpressionUnboundFact/next/next/next"/>
+              </parts>
+              <index>2147483647</index>
+            </expLeftSide>
+          </org.drools.workbench.models.datamodel.rule.SingleFieldConstraintEBLeftSide>
+        </constraints>
+      </constraintList>
+      <factType>Document</factType>
+      <boundName>document</boundName>
+      <isNegated>false</isNegated>
+      <window>
+        <parameters/>
+      </window>
+    </fact>
+  </lhs>
+  <rhs>
+    <freeForm>
+      <text>document.addAdvisory(&quot;A001&quot;, drools.getRule().getName() + &quot; fired&quot;)
+modify (eligibilityInfo) { setRefundable(false), setFopValidation(false), setCouponValidation(false), setQuoteValidation(false), setOverrideInputValidation(false) }
+</text>
+    </freeForm>
+  </rhs>
+  <imports>
+    <imports>
+      <org.kie.soup.project.datamodel.imports.Import>
+        <type>java.lang.Number</type>
+      </org.kie.soup.project.datamodel.imports.Import>
+    </imports>
+  </imports>
+  <packageName>com.delta.ticketing.rhdm.fulfillmentrules</packageName>
+  <isNegated>false</isNegated>
+  <table>
+    <entry>
+      <string>__ID_KOL_NAME__</string>
+      <list>
+        <string>1</string>
+      </list>
+    </entry>
+  </table>
+  <idCol>1</idCol>
+  <rowsCount>1</rowsCount>
+</rule>

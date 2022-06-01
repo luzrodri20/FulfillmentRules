@@ -1,0 +1,6 @@
+APPLICATION_NAME=fulfillment-rules
+NAMESPACE=ticketing-rhdm-build
+SOURCE_REPOSITORY_URL=git@git.delta.com:eticket/api-ticketing/fulfillment-rules.git
+SOURCE_REPOSITORY_REF=master
+PIPELINE_SCRIPT=Jenkinsfile_sbx
+PIELINE_NAME_SUFFIX=to-snapshots

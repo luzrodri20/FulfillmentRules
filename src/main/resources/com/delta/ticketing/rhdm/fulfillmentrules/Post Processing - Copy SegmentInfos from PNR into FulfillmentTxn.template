@@ -1,0 +1,66 @@
+<rule>
+  <name>Post Processing - Copy SegmentInfos from PNR into FulfillmentTxn</name>
+  <modelVersion>1.0</modelVersion>
+  <attributes>
+    <attribute>
+      <attributeName>salience</attributeName>
+      <value>1000</value>
+    </attribute>
+    <attribute>
+      <attributeName>ruleflow-group</attributeName>
+      <value>Post Processing Rule Flow Group</value>
+    </attribute>
+    <attribute>
+      <attributeName>agenda-group</attributeName>
+      <value>post processing</value>
+    </attribute>
+    <attribute>
+      <attributeName>lock-on-active</attributeName>
+      <value>true</value>
+    </attribute>
+  </attributes>
+  <metadataList/>
+  <lhs>
+    <fact>
+      <factType>FulfillmentTxn</factType>
+      <boundName>transaction</boundName>
+      <isNegated>false</isNegated>
+      <window>
+        <parameters/>
+      </window>
+    </fact>
+    <fact>
+      <factType>Pnr</factType>
+      <boundName>pnr</boundName>
+      <isNegated>false</isNegated>
+      <window>
+        <parameters/>
+      </window>
+    </fact>
+  </lhs>
+  <rhs>
+    <freeForm>
+      <text>transaction.addAdvisory(&quot;A001&quot;, drools.getRule().getName() + &quot; fired&quot;)
+transaction.segmentInfos = pnr.segInfos;</text>
+    </freeForm>
+  </rhs>
+  <imports>
+    <imports>
+      <org.kie.soup.project.datamodel.imports.Import>
+        <type>java.lang.Number</type>
+      </org.kie.soup.project.datamodel.imports.Import>
+    </imports>
+  </imports>
+  <packageName>com.delta.ticketing.rhdm.fulfillmentrules</packageName>
+  <isNegated>false</isNegated>
+  <table>
+    <entry>
+      <string>__ID_KOL_NAME__</string>
+      <list>
+        <string>1</string>
+      </list>
+    </entry>
+  </table>
+  <idCol>1</idCol>
+  <rowsCount>1</rowsCount>
+</rule>

@@ -1,0 +1,97 @@
+@Library('openshift-library') _
+
+openshift.withCluster() {
+  String ocpApiServer = env.OCP_API_SERVER ? "${env.OCP_API_SERVER}" : "https://openshift.default.svc.cluster.local"
+  env.NAMESPACE = openshift.project()
+  env.TOKEN = readFile('/var/run/secrets/kubernetes.io/serviceaccount/token').trim()
+//env.OC_CMD = "oc --token=${env.TOKEN} --server=${ocpApiServer} --certificate-authority=/run/secrets/kubernetes.io/serviceaccount/ca.crt --namespace=${env.NAMESPACE}"
+//env.APP_NAME = "${env.JOB_BASE_NAME}".replaceAll(/-?pipeline-?/, '').replaceAll(/-?${env.NAMESPACE}-?/, '')
+  env.APP_NAME = "fulfillment-rules"
+  echo "Starting Pipeline for ${APP_NAME}"
+  
+  def projectBase = "${env.NAMESPACE}".replaceAll(/-build/, '') //or replaceAll(/-sbx/, '')
+
+
+  echo "projectBase is ${projectBase}"
+
+  env.BUILD_ENV = "${projectBase}-build"
+  env.DEPLOY_ENV = "${projectBase}-deploy"
+  env.ARTIFACT_DIRECTORY = "./target"
+  env.NEXUS_USERNAME="SIvQPqmC"
+  env.NEXUS_PASSWORD ="pIG/mYzSslxJiCe6uNq8/nci9ihw2Ge4QXwJf2PLD784"
+
+// The following environmental variable are needed to start the standalone KieServer
+
+env.SOURCE_REPOSITORY_URL="https://git.delta.com/799912/ticketing-rhdm.git"
+env.SOURCE_REPOSITORY_REF="master"
+env.SOURCE_NAMESPACE="ticketing-rhdm-build"
+env.DESTINATION_NAMESPACE="ticketing-rhdm-deploy"
+env.LDAP_BIND_DN="cn=svcvcl,ou=svcacct,dc=delta,dc=rl,dc=delta,dc=com"
+env.LDAP_BIND_PW="I4A6vXcZNZdtTxwd"
+env.KIE_SERVER_CONTROLLER_USER="svcvcl"
+env.KIE_SERVER_CONTROLLER_PWD="I4A6vXcZNZdtTxwd"
+env.KIE_SERVER_MODE="DEVELOPMENT"
+env.RHDM_VERSION="7.7.0"
+env.KIE_SERVER_CONTAINER_DEPLOYMENT="FulfillmentRules=com.delta.ticketing:FulfillmentRules:1.0.0-SNAPSHOT"
+env.ANSIBLE_CONFIG="ansible.cfg"
+
+}
+
+// def gradleCmd = './gradlew'    
+
+pipeline {
+
+  agent none
+
+  stages {
+
+    stage('SCM Checkout') {
+      agent any
+      steps {
+        checkout scm
+      }
+    }
+
+    stage('Build') {
+      agent { label 'maven' }
+
+      steps {
+        withCredentials([[$class: 'UsernamePasswordMultiBinding' , credentialsId: "${NAMESPACE}-nexus-upload-token",
+                       usernameVariable: "username", passwordVariable: "password"]]){
+	   echo "Maven user name is ${NEXUS_USERNAME} and password is ${NEXUS_PASSWORD}"
+           sh 'mvn -s config/settings.xml -f pom.xml -B -U -DskipTests=true clean deploy'
+	}
+      }
+    }
+    
+
+    stage('Start Standalone KieServer with this ruleset') {
+       
+        agent { label 'applier' }
+        steps {
+	   dir("target") {
+              git branch: 'master',
+                credentialsId: "${NAMESPACE}-git-secret",
+                url: 'ssh://git@git.delta.com/799912/ticketing-rhdm.git'
+
+              sh "ls -lat"	     
+	      script{
+                 openshift.withCluster() {
+ 	            applier(secretName: "pipeline-sr1a1",
+                    registryUrl: "https://api.sr1a1.paasdev.delta.com:6443",
+                    inventoryPath: ".applier/inventory-sbx/",
+                    requirementsPath: ".applier/inventory-sbx/requirements.yml",
+                    skipTlsVerify: true,
+                    filterTags: "rhdm-kie-server" )
+                    script{
+
+                       echo 'Deployed stand alone kie server with Value Calc Rules'
+
+                    }
+              } 
+           }
+        }
+    }
+  }
+  }
+}

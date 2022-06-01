@@ -1,0 +1,188 @@
+<rule>
+  <name>Validation - Coupon - Status  Not Present</name>
+  <modelVersion>1.0</modelVersion>
+  <attributes>
+    <attribute>
+      <attributeName>ruleflow-group</attributeName>
+      <value>Validation Rule Flow</value>
+    </attribute>
+    <attribute>
+      <attributeName>lock-on-active</attributeName>
+      <value>true</value>
+    </attribute>
+  </attributes>
+  <metadataList/>
+  <lhs>
+    <fact>
+      <constraintList>
+        <constraints>
+          <fieldConstraint>
+            <operator>!= null</operator>
+            <constraintValueType>0</constraintValueType>
+            <expression>
+              <parts/>
+              <index>2147483647</index>
+            </expression>
+            <parameters/>
+            <factType>FulfillmentTxn</factType>
+            <fieldName>dbDocs</fieldName>
+            <fieldType>Collection</fieldType>
+          </fieldConstraint>
+        </constraints>
+      </constraintList>
+      <factType>FulfillmentTxn</factType>
+      <boundName>transaction</boundName>
+      <isNegated>false</isNegated>
+      <window>
+        <parameters/>
+      </window>
+    </fact>
+    <fact>
+      <constraintList>
+        <constraints>
+          <fieldConstraint>
+            <operator>!= null</operator>
+            <constraintValueType>0</constraintValueType>
+            <expression>
+              <parts/>
+              <index>2147483647</index>
+            </expression>
+            <parameters/>
+            <factType>Document</factType>
+            <fieldName>id</fieldName>
+            <fieldType>String</fieldType>
+          </fieldConstraint>
+          <fieldConstraint>
+            <constraintValueType>0</constraintValueType>
+            <expression>
+              <parts/>
+              <index>2147483647</index>
+            </expression>
+            <parameters/>
+            <fieldBinding>eligibilityInfo</fieldBinding>
+            <factType>Document</factType>
+            <fieldName>eligibilityInfo</fieldName>
+            <fieldType>EligibilityInfo</fieldType>
+          </fieldConstraint>
+        </constraints>
+      </constraintList>
+      <factType>Document</factType>
+      <boundName>document</boundName>
+      <isNegated>false</isNegated>
+      <window>
+        <parameters/>
+      </window>
+    </fact>
+    <fact>
+      <constraintList>
+        <constraints>
+          <fieldConstraint>
+            <operator>== null</operator>
+            <constraintValueType>0</constraintValueType>
+            <expression>
+              <parts/>
+              <index>2147483647</index>
+            </expression>
+            <parameters/>
+            <factType>Coupon</factType>
+            <fieldName>status</fieldName>
+            <fieldType>String</fieldType>
+          </fieldConstraint>
+          <fieldConstraint>
+            <operator>!= null</operator>
+            <constraintValueType>0</constraintValueType>
+            <expression>
+              <parts/>
+              <index>2147483647</index>
+            </expression>
+            <parameters/>
+            <factType>Coupon</factType>
+            <fieldName>docId</fieldName>
+            <fieldType>String</fieldType>
+          </fieldConstraint>
+          <fieldConstraint>
+            <operator>matches</operator>
+            <constraintValueType>6</constraintValueType>
+            <expression>
+              <parts>
+                <variable>
+                  <next class="field">
+                    <prev class="variable" reference="../.."/>
+                    <name>id</name>
+                    <classType>java.lang.String</classType>
+                    <genericType>String</genericType>
+                  </next>
+                  <name>document</name>
+                  <classType>Document</classType>
+                  <genericType>Document</genericType>
+                  <factType>Document</factType>
+                </variable>
+                <field reference="../variable/next"/>
+              </parts>
+              <index>2147483647</index>
+            </expression>
+            <parameters/>
+            <factType>Coupon</factType>
+            <fieldName>docId</fieldName>
+            <fieldType>String</fieldType>
+          </fieldConstraint>
+        </constraints>
+      </constraintList>
+      <factType>Coupon</factType>
+      <isNegated>false</isNegated>
+      <window>
+        <parameters/>
+      </window>
+    </fact>
+  </lhs>
+  <rhs>
+    <dslSentence>
+      <drl>modify(document) {setRuleResult(document.addRuleExecutionResult(false))}</drl>
+      <definition>note document validation is not successful</definition>
+      <values/>
+    </dslSentence>
+    <freeForm>
+      <text>document.addError(&quot;@{errorCode}&quot;, &quot;@{errorMessage}&quot;) 
+document.addAdvisory(&quot;A001&quot;, drools.getRule().getName() + &quot; fired&quot;)
+modify (eligibilityInfo) { setRefundable(@{refundEligible}) }
+</text>
+    </freeForm>
+  </rhs>
+  <imports>
+    <imports>
+      <org.kie.soup.project.datamodel.imports.Import>
+        <type>java.util.List</type>
+      </org.kie.soup.project.datamodel.imports.Import>
+    </imports>
+  </imports>
+  <packageName>com.delta.ticketing.rhdm.fulfillmentrules</packageName>
+  <isNegated>false</isNegated>
+  <table>
+    <entry>
+      <string>__ID_KOL_NAME__</string>
+      <list>
+        <string>1</string>
+      </list>
+    </entry>
+    <entry>
+      <string>refundEligible</string>
+      <list>
+        <string>false</string>
+      </list>
+    </entry>
+    <entry>
+      <string>errorMessage</string>
+      <list>
+        <string>Coupons Status Not Present for one of the Database  or DocAPI Coupons</string>
+      </list>
+    </entry>
+    <entry>
+      <string>errorCode</string>
+      <list>
+        <string>E0016</string>
+      </list>
+    </entry>
+  </table>
+  <idCol>1</idCol>
+  <rowsCount>1</rowsCount>
+</rule>
